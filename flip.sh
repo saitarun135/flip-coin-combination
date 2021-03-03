@@ -1,5 +1,81 @@
 #!/bin/bash
 read -p "Enter number of times to flip a combination:" no_of_flips
+
+echo "======================[SINGLET]======================================="
+declare -A singlet_frequency=( 
+
+                            [H]=0
+                            [T]=0
+
+                              )
+
+for(( flip = 1; flip <= no_of_flips; flip++ ))
+do
+    echo -n "Flip-$flip is "
+    (( toss = RANDOM % 2 ))
+    case $toss in 
+        0)
+            echo "Heads"
+            (( singlet_frequency[H]++ ))
+            ;;
+        1)
+            echo "Tails"
+            (( singlet_frequency[T]++ ))
+    esac
+done
+
+for combination in ${!singlet_frequency[@]}
+do
+   
+    percentage=$(( ${singlet_frequency[$combination]}  * 100 / no_of_flips ))
+    singlet_frequency[$combination]=$percentage
+    echo "percentage of $combination is ${singlet_frequency[$combination]}%"   
+done
+echo "===========================[DOUBLET]======================================"
+
+declare -A doublet_frequency=( 
+
+                                [HH]=0
+                                [HT]=0
+                                [TH]=0
+                                [TT]=0
+
+                              )
+
+for(( flip = 1; flip <= no_of_flips; flip++ ))
+do
+    echo -n "Flip-$flip is "
+    (( coin_1 = RANDOM % 2 ))
+    (( coin_2 = RANDOM % 2 ))
+
+      case $coin_1$coin_2 in 
+        00)
+            echo "Heads Heads"
+            (( doublet_frequency[HH]++ )) 
+            ;;
+        01)
+            echo "Heads Tails"
+            (( doublet_frequency[HT]++ ))
+            ;;
+        10)
+            echo "Tails Heads"
+            (( doublet_frequency[TH]++ ))
+            ;;
+        11)
+            echo "Tails Tails"
+            (( doublet_frequency[TT]++ ))
+            ;;
+    esac
+done
+
+for combination in ${!doublet_frequency[@]}
+do
+    percentage=$(( ${doublet_frequency[$combination]}  * 100 / no_of_flips ))
+    doublet_frequency[$combination]=$percentage
+    echo "percentage of $combination is ${doublet_frequency[$combination]}%"   
+done
+echo "=========================[TRIPLET]====================================="
+
 declare -A triplet_frequency=( 
 
                                 [HHH]=0
@@ -63,3 +139,16 @@ do
     triplet_frequency[$combination]=$percentage
     echo "percentage of $combination is ${triplet_frequency[$combination]}%"   
 done
+
+singlet_combination_percentages=( ${singlet_frequency[@]} )
+
+doublet_combination_percentages=( ${doublet_frequency[@]} )
+
+triplet_combination_percentages=( ${triplet_frequency[@]} )
+
+echo  "sorted singlet percentages:" "$( printf "%s\n" "${singlet_combination_percentages[@]}" | sort -n ) "
+
+echo  "sorted doublet percentages:" "$( printf "%s\n" "${doublet_combination_percentages[@]}" | sort -n ) "
+
+echo  "sorted triplet percentages:" "$( printf "%s\n" "${triplet_combination_percentages[@]}" | sort -n ) "
+
